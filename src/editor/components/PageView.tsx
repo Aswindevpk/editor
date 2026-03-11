@@ -1,14 +1,31 @@
 import React from 'react';
 import { useDocumentStore } from '../store/useDocumentStore';
+import HeaderFooterEditor from './HeaderFooterEditor';
 
 interface PageViewProps {
   index: number;
 }
 
 const PageView: React.FC<PageViewProps> = ({ index }) => {
-  const { settings, headerHTML, footerHTML } = useDocumentStore();
+  const { 
+    settings, 
+    headerHTML, 
+    footerHTML, 
+    isHeaderEditing, 
+    isFooterEditing,
+    setIsHeaderEditing,
+    setIsFooterEditing
+  } = useDocumentStore();
   
   const contentHeight = settings.height - (settings.marginTop + settings.marginBottom);
+
+  const handleHeaderDoubleClick = () => {
+    setIsHeaderEditing(true);
+  };
+
+  const handleFooterDoubleClick = () => {
+    setIsFooterEditing(true);
+  };
 
   return (
     <div 
@@ -20,33 +37,56 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
     >
       {/* HEADER: Placed inside the Top Margin */}
       <div 
-        className="absolute top-0 left-0 right-0 flex items-center cursor-default group"
+        className="absolute top-0 left-0 right-0 flex items-center cursor-default group z-20"
         style={{ 
           height: `${settings.marginTop}px`,
-          paddingLeft: `${settings.marginLeft}px`,
-          paddingRight: `${settings.marginRight}px`
         }}
+        onDoubleClick={handleHeaderDoubleClick}
       >
-        <div 
-          className="w-full text-sm border-b border-transparent group-hover:border-blue-100 transition-colors py-1" 
-          dangerouslySetInnerHTML={{ __html: headerHTML }} 
-        />
+        {isHeaderEditing ? (
+          <HeaderFooterEditor type="header" onClose={() => setIsHeaderEditing(false)} />
+        ) : (
+          <div 
+            className="w-full text-sm border-b border-transparent group-hover:border-blue-200 transition-colors py-1 mx-auto" 
+            style={{
+              paddingLeft: `${settings.marginLeft}px`,
+              paddingRight: `${settings.marginRight}px`,
+            }}
+            dangerouslySetInnerHTML={{ __html: headerHTML }} 
+          />
+        )}
       </div>
 
-      {/* CONTENT AREA PLACEHOLDER: Visual only, Editor sits on top */}
-      <div style={{ marginTop: `${settings.marginTop}px`, height: `${contentHeight}px` }} />
+      {/* CONTENT AREA PLACEHOLDER: Visual only, Editor sits on top. Pointer events none so editor is clickable */}
+      <div 
+        className="pointer-events-none"
+        style={{ marginTop: `${settings.marginTop}px`, height: `${contentHeight}px` }} 
+      />
 
       {/* FOOTER: Placed inside the Bottom Margin */}
       <div 
-        className="absolute bottom-0 left-0 right-0 flex items-center justify-between text-gray-400 text-sm"
+        className="absolute bottom-0 left-0 right-0 flex items-center justify-between text-gray-400 text-sm group z-20"
         style={{ 
           height: `${settings.marginBottom}px`,
-          paddingLeft: `${settings.marginLeft}px`,
-          paddingRight: `${settings.marginRight}px`
         }}
+        onDoubleClick={handleFooterDoubleClick}
       >
-        <div dangerouslySetInnerHTML={{ __html: footerHTML }} />
-        <span>Page {index + 1}</span>
+        {isFooterEditing ? (
+          <HeaderFooterEditor type="footer" onClose={() => setIsFooterEditing(false)} />
+        ) : (
+          <>
+            <div 
+              className="w-full h-full flex items-center border-t border-transparent group-hover:border-blue-200 transition-colors"
+              style={{
+                paddingLeft: `${settings.marginLeft}px`,
+                paddingRight: `${settings.marginRight}px`,
+              }}
+            >
+              <div className="flex-1" dangerouslySetInnerHTML={{ __html: footerHTML }} />
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity">Page {index + 1}</span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

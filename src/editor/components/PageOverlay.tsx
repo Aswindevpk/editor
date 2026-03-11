@@ -7,7 +7,7 @@ const PageOverlay: React.FC = () => {
   const pageCount = pageBreaks.length + 1;
 
   return (
-    <div className="absolute inset-0 pointer-events-none pt-10">
+    <div className="absolute inset-0 pt-10">
       {Array.from({ length: pageCount }).map((_, i) => (
         <PageView key={i} index={i} />
       ))}
