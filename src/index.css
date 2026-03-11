@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.tiptap {
+  outline: none;
+}
+
+.tiptap p {
+  margin: 0;
+}
+
+/* Hide scrollbar for the editor container */
+.editor-container::-webkit-scrollbar {
+  display: none;
+}
+.editor-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
