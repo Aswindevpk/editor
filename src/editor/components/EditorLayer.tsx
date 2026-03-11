@@ -1,11 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useDocumentStore } from '../store/useDocumentStore';
 import { usePagination } from '../hooks/usePagination';
+import { useEditorStore } from '../store/useEditorStore';
 
 const EditorLayer: React.FC = () => {
   const { settings, pageBreaks } = useDocumentStore();
+  const { setEditor } = useEditorStore();
   
   const editor = useEditor({
     extensions: [
@@ -22,6 +24,18 @@ const EditorLayer: React.FC = () => {
       },
     },
   });
+
+  // Sync editor instance to store
+  useEffect(() => {
+    if (editor) {
+      console.log('Setting editor instance in store:', editor);
+      setEditor(editor);
+    }
+    return () => {
+      console.log('Clearing editor instance from store');
+      setEditor(null);
+    };
+  }, [editor, setEditor]);
 
   const { calculatePagination } = usePagination((editor?.options.element as HTMLElement) || null);
 

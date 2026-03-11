@@ -7,16 +7,16 @@ interface PageViewProps {
 }
 
 const PageView: React.FC<PageViewProps> = ({ index }) => {
-  const { 
-    settings, 
-    headerHTML, 
-    footerHTML, 
-    isHeaderEditing, 
+  const {
+    settings,
+    headerHTML,
+    footerHTML,
+    isHeaderEditing,
     isFooterEditing,
     setIsHeaderEditing,
     setIsFooterEditing
   } = useDocumentStore();
-  
+
   const contentHeight = settings.height - (settings.marginTop + settings.marginBottom);
 
   const handleHeaderDoubleClick = () => {
@@ -28,17 +28,17 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
   };
 
   return (
-    <div 
-      className="relative bg-white shadow-page mx-auto mb-10 overflow-hidden" 
-      style={{ 
-        width: `${settings.width}px`, 
-        height: `${settings.height}px` 
+    <div
+      className="relative bg-white shadow-page mx-auto mb-10 overflow-hidden"
+      style={{
+        width: `${settings.width}px`,
+        height: `${settings.height}px`
       }}
     >
       {/* HEADER: Placed inside the Top Margin */}
-      <div 
+      <div
         className="absolute top-0 left-0 right-0 flex items-center cursor-default group z-20"
-        style={{ 
+        style={{
           height: `${settings.marginTop}px`,
         }}
         onDoubleClick={handleHeaderDoubleClick}
@@ -46,27 +46,27 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
         {isHeaderEditing ? (
           <HeaderFooterEditor type="header" onClose={() => setIsHeaderEditing(false)} />
         ) : (
-          <div 
-            className="w-full text-sm border-b border-transparent group-hover:border-blue-200 transition-colors py-1 mx-auto" 
+          <div
+            className="w-full text-sm border-b border-transparent group-hover:border-blue-200 transition-colors py-1 mx-auto"
             style={{
               paddingLeft: `${settings.marginLeft}px`,
               paddingRight: `${settings.marginRight}px`,
             }}
-            dangerouslySetInnerHTML={{ __html: headerHTML }} 
+            dangerouslySetInnerHTML={{ __html: headerHTML }}
           />
         )}
       </div>
 
       {/* CONTENT AREA PLACEHOLDER: Visual only, Editor sits on top. Pointer events none so editor is clickable */}
-      <div 
+      <div
         className="pointer-events-none"
-        style={{ marginTop: `${settings.marginTop}px`, height: `${contentHeight}px` }} 
+        style={{ marginTop: `${settings.marginTop}px`, height: `${contentHeight}px` }}
       />
 
       {/* FOOTER: Placed inside the Bottom Margin */}
-      <div 
+      <div
         className="absolute bottom-0 left-0 right-0 flex items-center justify-between text-gray-400 text-sm group z-20"
-        style={{ 
+        style={{
           height: `${settings.marginBottom}px`,
         }}
         onDoubleClick={handleFooterDoubleClick}
@@ -75,7 +75,7 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
           <HeaderFooterEditor type="footer" onClose={() => setIsFooterEditing(false)} />
         ) : (
           <>
-            <div 
+            <div
               className="w-full h-full flex items-center border-t border-transparent group-hover:border-blue-200 transition-colors"
               style={{
                 paddingLeft: `${settings.marginLeft}px`,
