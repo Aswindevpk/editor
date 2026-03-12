@@ -60,12 +60,12 @@ export async function exportToPdf({
   let currentPageIndex = 0;
 
   // A4 content height calculation
-  const maxContentHeight = settings.height - settings.marginTop - settings.marginBottom;
+  const maxContentHeight = settings.height - settings.margins.top - settings.margins.bottom;
 
   // 2. Pagination Logic: Group nodes into pages
   let currentHeight = 0;
   const tempPage = document.createElement('div');
-  tempPage.style.width = `${settings.width - settings.marginLeft - settings.marginRight}px`;
+  tempPage.style.width = `${settings.width - settings.margins.left - settings.margins.right}px`;
   document.body.appendChild(tempPage);
 
   nodes.forEach((node) => {
@@ -91,11 +91,11 @@ export async function exportToPdf({
   // 3. Construct Final HTML
     const finalPagesHtml = pages.map((pageContent) => `
     <div class="page-sheet">
-      <div class="header" style="height: ${settings.marginTop}px;">${headerHTML}</div>
-      <div class="content-area" style="padding: 0 ${settings.marginRight}px 0 ${settings.marginLeft}px; min-height: ${maxContentHeight}px;">
+      <div class="header" style="height: ${settings.margins.top}px;">${headerHTML}</div>
+      <div class="content-area" style="padding: 0 ${settings.margins.right}px 0 ${settings.margins.left}px; min-height: ${maxContentHeight}px;">
         ${pageContent.join('')}
       </div>
-      <div class="footer" style="height: ${settings.marginBottom}px;">
+      <div class="footer" style="height: ${settings.margins.bottom}px;">
         ${footerHTML}
       </div>
     </div>
@@ -129,7 +129,7 @@ export async function exportToPdf({
         .header, .footer {
           display: flex;
           align-items: center;
-          padding: 0 ${settings.marginLeft}px;
+          padding: 0 ${settings.margins.left}px;
           color: #9ca3af;
           font-size: 14px;
         }

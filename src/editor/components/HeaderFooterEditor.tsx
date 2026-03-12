@@ -9,7 +9,7 @@ interface HeaderFooterEditorProps {
 }
 
 const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }) => {
-  const { headerJSON, setHeaderJSON, footerJSON, setFooterJSON, settings } = useDocumentStore();
+  const { headerJSON, setHeaderJSON, footerJSON, setFooterJSON, settings, setActiveEditor } = useDocumentStore();
 
   const content = type === 'header' ? headerJSON : footerJSON;
   const setContent = type === 'header' ? setHeaderJSON : setFooterJSON;
@@ -19,6 +19,9 @@ const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }
     content,
     onUpdate: ({ editor }) => {
       setContent(editor.getJSON());
+    },
+    onFocus: ({ editor }) => {
+      setActiveEditor(editor);
     },
     autofocus: 'start',
     editorProps: {
@@ -34,6 +37,14 @@ const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }
       },
     },
   });
+
+  // Sync active editor to store
+  React.useEffect(() => {
+    if (editor) {
+      setActiveEditor(editor);
+    }
+    // We don't clear on unmount here because main editor should claim it
+  }, [editor, setActiveEditor]);
 
   // Handle clicking outside to close
   React.useEffect(() => {
@@ -51,8 +62,8 @@ const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }
     <div
       className="header-footer-editor-container w-full h-full flex items-center bg-blue-50/30 ring-2 ring-blue-400 ring-inset rounded-sm"
       style={{
-        paddingLeft: `${settings.marginLeft}px`,
-        paddingRight: `${settings.marginRight}px`,
+        paddingLeft: `${settings.margins.left}px`,
+        paddingRight: `${settings.margins.right}px`,
       }}
     >
       <EditorContent editor={editor} className="w-full" />

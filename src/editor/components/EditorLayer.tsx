@@ -9,7 +9,10 @@ const EditorLayer: React.FC = () => {
 
     const editor = useEditor({
         extensions: EDITOR_EXTENSIONS,
-        content: '',
+        autofocus: 'start',
+        onFocus: ({ editor }) => {
+            setActiveEditor(editor);
+        },
         editorProps: EDITOR_PROPS,
     });
 
@@ -32,7 +35,7 @@ const EditorLayer: React.FC = () => {
         if (!pageBreaks.length) return '';
 
         // Gap = mb-10 (40px)
-        const jumpHeight = settings.marginBottom + 40 + settings.marginTop;
+        const jumpHeight = settings.margins.bottom + 40 + settings.margins.top;
 
         return pageBreaks.map((breakIndex) => {
             // Tiptap children are direct descendants of .tiptap
@@ -52,10 +55,10 @@ const EditorLayer: React.FC = () => {
                 className="editor-container mx-auto"
                 style={{
                     width: `${settings.width}px`,
-                    paddingTop: `${settings.marginTop}px`,
-                    paddingBottom: `${settings.marginBottom}px`,
-                    paddingLeft: `${settings.marginLeft}px`,
-                    paddingRight: `${settings.marginRight}px`,
+                    paddingTop: `${settings.margins.top}px`,
+                    paddingBottom: `${settings.margins.bottom}px`,
+                    paddingLeft: `${settings.margins.left}px`,
+                    paddingRight: `${settings.margins.right}px`,
                 }}
                 onInput={calculatePagination}
             />

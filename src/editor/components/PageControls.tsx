@@ -1,31 +1,143 @@
 import React from 'react';
-import { Settings, Info, History, Layout, Type, Palette } from 'lucide-react';
+import { useDocumentStore } from '../store/useDocumentStore';
+import { PAGE_SIZES } from '../utils/pageSizes';
+import type { PageSizeType } from '../utils/pageSizes';
+import { Settings, Maximize, FileText, Layout } from 'lucide-react';
 
 export const PageControls: React.FC = () => {
-    const controls = [
-        { icon: Layout, label: 'Page Setup', active: true },
-        { icon: Type, label: 'Typography' },
-        { icon: Palette, label: 'Style' },
-        { icon: History, label: 'Version History' },
-        { icon: Info, label: 'Document Info' },
-        { icon: Settings, label: 'Settings' },
-    ];
+    const { settings, updateSettings } = useDocumentStore();
+
+    const handleSizeChange = (size: PageSizeType) => {
+        updateSettings({ size });
+    };
+
+    const handleMarginChange = (side: 'top' | 'bottom' | 'left' | 'right', value: number) => {
+        updateSettings({
+            margins: { ...settings.margins, [side]: value }
+        });
+    };
 
     return (
-        <div className="w-16 flex flex-col items-center py-4 bg-white h-full border-l border-gray-100 gap-4">
-            {controls.map((control, i) => (
-                <button
-                    key={i}
-                    title={control.label}
-                    className={`p-2.5 rounded-xl transition-all ${
-                        control.active 
-                        ? 'bg-blue-50 text-blue-600 shadow-sm' 
-                        : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'
-                    }`}
-                >
-                    <control.icon size={22} strokeWidth={control.active ? 2.5 : 2} />
-                </button>
-            ))}
+        <div className="w-72 bg-white border-l h-full overflow-y-auto p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-8 text-gray-900 font-semibold border-b pb-4">
+                <Settings size={20} className="text-blue-600" />
+                <h2>Document Settings</h2>
+            </div>
+
+            <section className="mb-8">
+                <div className="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <Maximize size={14} />
+                    <span>Page Setup</span>
+                </div>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Page Size</label>
+                        <select
+                            value={settings.size}
+                            onChange={(e) => handleSizeChange(e.target.value as PageSizeType)}
+                            className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            {(Object.keys(PAGE_SIZES) as PageSizeType[]).map((size) => (
+                                <option key={size} value={size}>
+                                    {PAGE_SIZES[size].label} ({PAGE_SIZES[size].width}x{PAGE_SIZES[size].height}px)
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Orientation</label>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => updateSettings({ orientation: 'portrait' })}
+                                className={`flex-1 px-3 py-2 text-sm border rounded-md transition-colors ${settings.orientation === 'portrait' ? 'bg-blue-50 border-blue-200 text-blue-700' : 'hover:bg-gray-50'
+                                    }`}
+                            >
+                                Portrait
+                            </button>
+                            <button
+                                onClick={() => updateSettings({ orientation: 'landscape' })}
+                                className={`flex-1 px-3 py-2 text-sm border rounded-md transition-colors ${settings.orientation === 'landscape' ? 'bg-blue-50 border-blue-200 text-blue-700' : 'hover:bg-gray-50'
+                                    }`}
+                            >
+                                Landscape
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section className="mb-8">
+                <div className="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <Layout size={14} />
+                    <span>Margins (px)</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-xs text-gray-500 mb-1">Top</label>
+                        <input
+                            type="number"
+                            value={settings.margins.top}
+                            onChange={(e) => handleMarginChange('top', parseInt(e.target.value) || 0)}
+                            className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-500 mb-1">Bottom</label>
+                        <input
+                            type="number"
+                            value={settings.margins.bottom}
+                            onChange={(e) => handleMarginChange('bottom', parseInt(e.target.value) || 0)}
+                            className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-500 mb-1">Left</label>
+                        <input
+                            type="number"
+                            value={settings.margins.left}
+                            onChange={(e) => handleMarginChange('left', parseInt(e.target.value) || 0)}
+                            className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-500 mb-1">Right</label>
+                        <input
+                            type="number"
+                            value={settings.margins.right}
+                            onChange={(e) => handleMarginChange('right', parseInt(e.target.value) || 0)}
+                            className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div className="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <FileText size={14} />
+                    <span>Elements</span>
+                </div>
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-700">Show Header</span>
+                        <input
+                            type="checkbox"
+                            checked={settings.showHeader}
+                            onChange={(e) => updateSettings({ showHeader: e.target.checked })}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                        />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-700">Show Footer</span>
+                        <input
+                            type="checkbox"
+                            checked={settings.showFooter}
+                            onChange={(e) => updateSettings({ showFooter: e.target.checked })}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                        />
+                    </div>
+                </div>
+            </section>
         </div>
     );
 };

@@ -5,13 +5,18 @@ import { HEADER_FOOTER_EXTENSIONS } from '../config/editorExtensions';
 
 const STORAGE_KEY = 'tiptap-editor-doc';
 
+import type { PageSizeType, MarginConfig } from '../utils/pageSizes';
+import { PAGE_SIZES, DEFAULT_MARGINS } from '../utils/pageSizes';
+
 export interface PageSettings {
-  width: number;       // 794px for A4 at 96 DPI
-  height: number;      // 1122px for A4
-  marginTop: number;   // 96px (1 inch)
-  marginBottom: number; // 96px
-  marginLeft: number;  // 72px (0.75 inch)
-  marginRight: number; // 72px
+  size: PageSizeType;
+  orientation: 'portrait' | 'landscape';
+  margins: MarginConfig;
+  showHeader: boolean;
+  showFooter: boolean;
+  // Derived values for internal use
+  width: number;
+  height: number;
 }
 
 export interface DocumentMetadata {
@@ -33,7 +38,8 @@ interface DocumentState {
   isSaving: boolean;
   lastSaved: string | null;
   isPaginationPending: boolean;
-  setSettings: (settings: Partial<PageSettings>) => void;
+  pages: { id: string; content: any }[];
+  updateSettings: (settings: Partial<PageSettings>) => void;
   updateMetadata: (metadata: Partial<DocumentMetadata>) => void;
   setHeaderJSON: (json: any) => void;
   setFooterJSON: (json: any) => void;
@@ -45,16 +51,18 @@ interface DocumentState {
   loadDocument: () => void;
   triggerPagination: () => void;
   setIsPaginationPending: (isPending: boolean) => void;
+  updatePages: (pages: { id: string; content: any }[]) => void;
 }
 
 export const useDocumentStore = create<DocumentState>((set, get) => ({
   settings: {
-    width: 794,
-    height: 1122,
-    marginTop: 96,
-    marginBottom: 96,
-    marginLeft: 72,
-    marginRight: 72,
+    size: 'A4',
+    orientation: 'portrait',
+    margins: DEFAULT_MARGINS,
+    showHeader: true,
+    showFooter: true,
+    width: PAGE_SIZES.A4.width,
+    height: PAGE_SIZES.A4.height,
   },
   metadata: {
     title: 'Untitled Document',
@@ -64,7 +72,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   headerHTML: '<p style="text-align: left">Document Header</p>',
   footerHTML: '<p style="text-align: left">Document Footer</p>',
   pageBreaks: [],
-  contentHeight: 1122 - (96 + 96),
+  pages: [],
+  contentHeight: PAGE_SIZES.A4.height - (DEFAULT_MARGINS.top + DEFAULT_MARGINS.bottom),
   isHeaderEditing: false,
   isFooterEditing: false,
   activeEditor: null,
@@ -72,11 +81,24 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   lastSaved: null,
   isPaginationPending: false,
 
-  setSettings: (newSettings) => set((state) => {
-    const settings = { ...state.settings, ...newSettings };
+  updateSettings: (newSettings) => set((state) => {
+    const updated = { ...state.settings, ...newSettings };
+    
+    // Calculate width/height based on size and orientation
+    const pageSize = PAGE_SIZES[updated.size];
+    let width = pageSize.width;
+    let height = pageSize.height;
+    
+    if (updated.orientation === 'landscape') {
+      width = pageSize.height;
+      height = pageSize.width;
+    }
+    
+    const settings = { ...updated, width, height };
+    
     return {
       settings,
-      contentHeight: settings.height - (settings.marginTop + settings.marginBottom),
+      contentHeight: settings.height - (settings.margins.top + settings.margins.bottom),
     };
   }),
   updateMetadata: (newMetadata) => set((state) => ({
@@ -147,4 +169,5 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     set((state) => ({ ...state })); 
   },
   setIsPaginationPending: (isPending) => set({ isPaginationPending: isPending }),
+  updatePages: (pages) => set({ pages }),
 }));
