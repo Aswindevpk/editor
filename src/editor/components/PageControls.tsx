@@ -39,7 +39,7 @@ export const PageControls: React.FC = () => {
                         >
                             {(Object.keys(PAGE_SIZES) as PageSizeType[]).map((size) => (
                                 <option key={size} value={size}>
-                                    {PAGE_SIZES[size].label} ({PAGE_SIZES[size].width}x{PAGE_SIZES[size].height}px)
+                                    {PAGE_SIZES[size].label} ({PAGE_SIZES[size].widthMm} x {PAGE_SIZES[size].heightMm})
                                 </option>
                             ))}
                         </select>

@@ -61,8 +61,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     margins: DEFAULT_MARGINS,
     showHeader: true,
     showFooter: true,
-    width: PAGE_SIZES.A4.width,
-    height: PAGE_SIZES.A4.height,
+    width: PAGE_SIZES.A4.widthPx ,
+    height: PAGE_SIZES.A4.heightPx,
   },
   metadata: {
     title: 'Untitled Document',
@@ -73,7 +73,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   footerHTML: '<p style="text-align: left">Document Footer</p>',
   pageBreaks: [],
   pages: [],
-  contentHeight: PAGE_SIZES.A4.height - (DEFAULT_MARGINS.top + DEFAULT_MARGINS.bottom),
+  contentHeight: PAGE_SIZES.A4.heightPx - (DEFAULT_MARGINS.top + DEFAULT_MARGINS.bottom),
   isHeaderEditing: false,
   isFooterEditing: false,
   activeEditor: null,
@@ -86,12 +86,12 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     
     // Calculate width/height based on size and orientation
     const pageSize = PAGE_SIZES[updated.size];
-    let width = pageSize.width;
-    let height = pageSize.height;
+    let width = pageSize.widthPx;
+    let height = pageSize.heightPx;
     
     if (updated.orientation === 'landscape') {
-      width = pageSize.height;
-      height = pageSize.width;
+      width = pageSize.heightPx;
+      height = pageSize.widthPx;
     }
     
     const settings = { ...updated, width, height };

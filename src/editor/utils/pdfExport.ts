@@ -96,7 +96,7 @@ export async function exportToPdf({
         
         ${styles}
         
-        @page { size: A4; margin: 0; }
+        @page { size: ${settings.size}${settings.orientation === 'landscape' ? ' landscape' : ''}; margin: 0; }
         body { 
           background: #f3f4f6; 
           margin: 0; 
