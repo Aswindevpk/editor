@@ -12,12 +12,8 @@ import {
     Download,
     List,
     ListOrdered,
-    CheckSquare,
-    IndentIncrease,
-    IndentDecrease,
-    Baseline,
     Highlighter,
-    Eraser,
+    Baseline,
     Loader2,
 } from 'lucide-react';
 import { useDocumentStore } from '../store/useDocumentStore';
@@ -67,28 +63,19 @@ export const EditorToolbar: React.FC = () => {
     };
 
     const families = [
-        { label: 'Default', value: 'Inter' },
-        { label: 'Serif', value: 'serif' },
-        { label: 'Monospace', value: 'monospace' },
+        { label: 'Inter', value: 'Inter' },
+        { label: 'Roboto', value: 'Roboto' },
+        { label: 'Arial', value: 'Arial' },
+        { label: 'Helvetica', value: 'Helvetica' },
+        { label: 'Georgia', value: 'Georgia' },
+        { label: 'Times New Roman', value: 'Times New Roman' },
+        { label: 'Merriweather', value: 'Merriweather' },
+        { label: 'JetBrains Mono', value: 'JetBrains Mono' },
+        { label: 'Fira Code', value: 'Fira Code' },
         { label: 'Poppins', value: 'Poppins' },
-        { label: 'Sora', value: 'Sora' },
+        { label: 'Montserrat', value: 'Montserrat' },
     ];
 
-    const styles = [
-        { label: 'Normal text', value: 'paragraph' },
-        { label: 'Heading 1', value: 'heading', level: 1 },
-        { label: 'Heading 2', value: 'heading', level: 2 },
-        { label: 'Heading 3', value: 'heading', level: 3 },
-        { label: 'Heading 4', value: 'heading', level: 4 },
-        { label: 'Heading 5', value: 'heading', level: 5 },
-        { label: 'Heading 6', value: 'heading', level: 6 },
-    ];
-
-    const getCurrentStyle = () => {
-        if (!editor) return 'paragraph';
-        const activeHeading = styles.find(s => s.value === 'heading' && editor.isActive('heading', { level: s.level }));
-        return activeHeading ? `${activeHeading.value}-${activeHeading.level}` : 'paragraph';
-    };
 
     return (
         <div className="sticky top-0 z-50 flex items-center gap-1 bg-white border-b px-4 py-1.5 shadow-sm min-w-max overflow-x-auto custom-scrollbar shrink-0">
@@ -111,29 +98,7 @@ export const EditorToolbar: React.FC = () => {
 
                 {/* Typography & Styles */}
                 <div className="flex items-center gap-1 pr-2 border-r mr-2">
-                    <select
-                        className="text-xs border rounded px-1.5 py-1 outline-none hover:bg-gray-50 cursor-pointer text-gray-700 w-32"
-                        onChange={(e) => {
-                            const val = e.target.value;
-                            if (val === 'paragraph') {
-                                run(ed => ed.setParagraph());
-                            } else {
-                                const level = parseInt(val.split('-')[1]);
-                                run(ed => ed.toggleHeading({ level: level as any }));
-                            }
-                        }}
-                        value={getCurrentStyle()}
-                        disabled={!editor}
-                    >
-                        {styles.map(s => (
-                            <option
-                                key={s.level ? `${s.value}-${s.level}` : s.value}
-                                value={s.level ? `${s.value}-${s.level}` : s.value}
-                            >
-                                {s.label}
-                            </option>
-                        ))}
-                    </select>
+
 
                     <select
                         className="text-xs border rounded px-1.5 py-1 outline-none hover:bg-gray-50 cursor-pointer text-gray-700"
@@ -240,28 +205,6 @@ export const EditorToolbar: React.FC = () => {
                     >
                         <ListOrdered size={16} />
                     </Button>
-                    <Button
-                        onClick={() => run(e => e.toggleTaskList())}
-                        active={editor?.isActive('taskList')}
-                        disabled={!editor}
-                        title="Task List"
-                    >
-                        <CheckSquare size={16} />
-                    </Button>
-                    <Button
-                        onClick={() => run(e => e.sinkListItem('listItem'))}
-                        disabled={!editor}
-                        title="Indent"
-                    >
-                        <IndentIncrease size={16} />
-                    </Button>
-                    <Button
-                        onClick={() => run(e => e.liftListItem('listItem'))}
-                        disabled={!editor}
-                        title="Outdent"
-                    >
-                        <IndentDecrease size={16} />
-                    </Button>
                 </div>
 
                 {/* Colors & Utils */}
@@ -288,9 +231,6 @@ export const EditorToolbar: React.FC = () => {
                             disabled={!editor}
                         />
                     </div>
-                    <Button onClick={() => run(e => e.unsetAllMarks().clearNodes())} disabled={!editor} title="Clear Formatting">
-                        <Eraser size={16} />
-                    </Button>
                 </div>
             </div>
 

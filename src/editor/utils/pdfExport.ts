@@ -79,7 +79,7 @@ export async function exportToPdf({
      const contentArea = clone.querySelector('.content-area');
      if (contentArea) {
          contentArea.innerHTML = chunkedPages[index]?.join('') || '';
-         contentArea.classList.add('prose', 'prose-sm', 'max-w-none'); // ensure tiptap prose classes apply
+         contentArea.classList.add('prose', 'prose-sm', 'max-w-none', 'tiptap'); // ensure tiptap prose classes apply
      }
 
      return clone.outerHTML;
@@ -92,7 +92,7 @@ export async function exportToPdf({
     <html>
     <head>
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&family=Sora:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;700&family=Poppins:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap');
         
         ${styles}
         

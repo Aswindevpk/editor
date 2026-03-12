@@ -21,6 +21,9 @@ import { LineHeight } from '../extensions/lineHeight';
 import CharacterCount from '@tiptap/extension-character-count';
 import Focus from '@tiptap/extension-focus';
 import Placeholder from '@tiptap/extension-placeholder';
+import BulletList from '@tiptap/extension-bullet-list';
+import OrderedList from '@tiptap/extension-ordered-list';
+import ListItem from '@tiptap/extension-list-item';
 
 const sharedUnderline = Underline;
 const sharedLink = Link.configure({
@@ -73,6 +76,9 @@ export const EDITOR_EXTENSIONS = [
     FontFamily,
     FontSize,
     LineHeight,
+    BulletList,
+    OrderedList,
+    ListItem,
     CharacterCount.configure({
         limit: 50000,
     }),
@@ -111,6 +117,9 @@ export const HEADER_FOOTER_EXTENSIONS = [
     FontFamily,
     FontSize,
     LineHeight,
+    BulletList,
+    OrderedList,
+    ListItem,
     Highlight.configure({ multicolor: true }),
     sharedLink,
     Typography,
