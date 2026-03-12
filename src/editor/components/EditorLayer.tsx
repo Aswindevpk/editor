@@ -3,6 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { useDocumentStore } from '../store/useDocumentStore';
 import { usePagination } from '../hooks/usePagination';
 import { EDITOR_EXTENSIONS, EDITOR_PROPS } from '../config/editorExtensions';
+import { mmToPx } from '../utils/pageSizes';
 
 const EditorLayer: React.FC = () => {
     const { settings, pageBreaks, setActiveEditor } = useDocumentStore();
@@ -35,7 +36,7 @@ const EditorLayer: React.FC = () => {
         if (!pageBreaks.length) return '';
 
         // Gap = mb-10 (40px)
-        const jumpHeight = settings.margins.bottom + 40 + settings.margins.top;
+        const jumpHeight = mmToPx(settings.margins.bottom) + 40 + mmToPx(settings.margins.top);
 
         return pageBreaks.map((breakIndex) => {
             // Tiptap children are direct descendants of .tiptap
@@ -55,10 +56,10 @@ const EditorLayer: React.FC = () => {
                 className="editor-container mx-auto"
                 style={{
                     width: `${settings.width}px`,
-                    paddingTop: `${settings.margins.top}px`,
-                    paddingBottom: `${settings.margins.bottom}px`,
-                    paddingLeft: `${settings.margins.left}px`,
-                    paddingRight: `${settings.margins.right}px`,
+                    paddingTop: `${mmToPx(settings.margins.top)}px`,
+                    paddingBottom: `${mmToPx(settings.margins.bottom)}px`,
+                    paddingLeft: `${mmToPx(settings.margins.left)}px`,
+                    paddingRight: `${mmToPx(settings.margins.right)}px`,
                 }}
                 onInput={calculatePagination}
             />

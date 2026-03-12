@@ -2,7 +2,7 @@ import React from 'react';
 import { useDocumentStore } from '../store/useDocumentStore';
 import { PAGE_SIZES } from '../utils/pageSizes';
 import type { PageSizeType } from '../utils/pageSizes';
-import { Settings, Maximize, FileText, Layout } from 'lucide-react';
+import { Settings, Maximize, Layout } from 'lucide-react';
 
 export const PageControls: React.FC = () => {
     const { settings, updateSettings } = useDocumentStore();
@@ -70,15 +70,16 @@ export const PageControls: React.FC = () => {
             <section className="mb-8">
                 <div className="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
                     <Layout size={14} />
-                    <span>Margins (px)</span>
+                    <span>Margins (mm)</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-xs text-gray-500 mb-1">Top</label>
                         <input
                             type="number"
+                            step="0.1"
                             value={settings.margins.top}
-                            onChange={(e) => handleMarginChange('top', parseInt(e.target.value) || 0)}
+                            onChange={(e) => handleMarginChange('top', parseFloat(e.target.value) )}
                             className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
@@ -86,8 +87,9 @@ export const PageControls: React.FC = () => {
                         <label className="block text-xs text-gray-500 mb-1">Bottom</label>
                         <input
                             type="number"
+                            step="0.1"
                             value={settings.margins.bottom}
-                            onChange={(e) => handleMarginChange('bottom', parseInt(e.target.value) || 0)}
+                            onChange={(e) => handleMarginChange('bottom', parseFloat(e.target.value))}
                             className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
@@ -95,8 +97,9 @@ export const PageControls: React.FC = () => {
                         <label className="block text-xs text-gray-500 mb-1">Left</label>
                         <input
                             type="number"
+                            step="0.1"
                             value={settings.margins.left}
-                            onChange={(e) => handleMarginChange('left', parseInt(e.target.value) || 0)}
+                            onChange={(e) => handleMarginChange('left', parseFloat(e.target.value) )}
                             className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
@@ -104,15 +107,16 @@ export const PageControls: React.FC = () => {
                         <label className="block text-xs text-gray-500 mb-1">Right</label>
                         <input
                             type="number"
+                            step="0.1"
                             value={settings.margins.right}
-                            onChange={(e) => handleMarginChange('right', parseInt(e.target.value) || 0)}
+                            onChange={(e) => handleMarginChange('right', parseFloat(e.target.value))}
                             className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
                 </div>
             </section>
 
-            <section>
+            {/* <section>
                 <div className="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
                     <FileText size={14} />
                     <span>Elements</span>
@@ -137,7 +141,7 @@ export const PageControls: React.FC = () => {
                         />
                     </div>
                 </div>
-            </section>
+            </section> */}
         </div>
     );
 };

@@ -1,4 +1,5 @@
 import type { PageSettings } from '../store/useDocumentStore';
+import { mmToPx } from '../utils/pageSizes';
 
 export interface PaginationResult {
   pageBreaks: number[];
@@ -10,7 +11,7 @@ export const runPagination = (
   settings: PageSettings
 ): PaginationResult => {
   const blocks = Array.from(container.querySelectorAll('.tiptap > *')) as HTMLElement[];
-  const contentHeight = settings.height - (settings.margins.top + settings.margins.bottom);
+  const contentHeight = settings.height - (mmToPx(settings.margins.top) + mmToPx(settings.margins.bottom));
   
   const pageBreaks: number[] = [];
   let currentHeight = 0;

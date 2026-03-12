@@ -2,6 +2,8 @@ import React from 'react';
 import { useDocumentStore } from '../store/useDocumentStore';
 import HeaderFooterEditor from './HeaderFooterEditor';
 
+import { mmToPx } from '../utils/pageSizes';
+
 interface PageViewProps {
   index: number;
 }
@@ -17,7 +19,7 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
     setIsFooterEditing
   } = useDocumentStore();
 
-  const contentHeight = settings.height - (settings.margins.top + settings.margins.bottom);
+  const contentHeight = settings.height - (mmToPx(settings.margins.top) + mmToPx(settings.margins.bottom));
 
   const handleHeaderDoubleClick = () => {
     setIsHeaderEditing(true);
@@ -40,7 +42,7 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
       <div
         className="absolute top-0 left-0 right-0 flex items-center cursor-default text-gray-400 group z-20"
         style={{
-          height: `${settings.margins.top}px`,
+          height: `${mmToPx(settings.margins.top)}px`,
         }}
         onDoubleClick={handleHeaderDoubleClick}
       >
@@ -50,8 +52,8 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
           <div
             className="w-full h-full flex items-center text-sm border-b border-transparent group-hover:border-blue-200 transition-colors py-1 mx-auto"
             style={{
-              paddingLeft: `${settings.margins.left}px`,
-              paddingRight: `${settings.margins.right}px`,
+              paddingLeft: `${mmToPx(settings.margins.left)}px`,
+              paddingRight: `${mmToPx(settings.margins.right)}px`,
             }}
             dangerouslySetInnerHTML={{ __html: headerHTML }}
           />
@@ -62,10 +64,10 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
       <div
         className="content-area pointer-events-none"
         style={{ 
-          marginTop: `${settings.margins.top}px`, 
+          marginTop: `${mmToPx(settings.margins.top)}px`, 
           height: `${contentHeight}px`,
-          paddingLeft: `${settings.margins.left}px`,
-          paddingRight: `${settings.margins.right}px`,
+          paddingLeft: `${mmToPx(settings.margins.left)}px`,
+          paddingRight: `${mmToPx(settings.margins.right)}px`,
           boxSizing: 'border-box'
         }}
       />
@@ -74,7 +76,7 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
       <div
         className="absolute bottom-0 left-0 right-0 flex items-center justify-between text-gray-400 text-sm group z-20"
         style={{
-          height: `${settings.margins.bottom}px`,
+          height: `${mmToPx(settings.margins.bottom)}px`,
         }}
         onDoubleClick={handleFooterDoubleClick}
       >
@@ -85,8 +87,8 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
             <div
               className="w-full h-full flex items-center border-t border-transparent group-hover:border-blue-200 transition-colors"
               style={{
-                paddingLeft: `${settings.margins.left}px`,
-                paddingRight: `${settings.margins.right}px`,
+                paddingLeft: `${mmToPx(settings.margins.left)}px`,
+                paddingRight: `${mmToPx(settings.margins.right)}px`,
               }}
             >
               <div className="flex-1" dangerouslySetInnerHTML={{ __html: footerHTML }} />

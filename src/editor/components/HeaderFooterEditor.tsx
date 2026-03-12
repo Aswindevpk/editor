@@ -2,6 +2,7 @@ import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { useDocumentStore } from '../store/useDocumentStore';
 import { HEADER_FOOTER_EXTENSIONS } from '../config/editorExtensions';
+import { mmToPx } from '../utils/pageSizes';
 
 interface HeaderFooterEditorProps {
   type: 'header' | 'footer';
@@ -62,8 +63,8 @@ const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }
     <div
       className="header-footer-editor-container w-full h-full flex items-center bg-blue-50/30 ring-2 ring-blue-400 ring-inset rounded-sm"
       style={{
-        paddingLeft: `${settings.margins.left}px`,
-        paddingRight: `${settings.margins.right}px`,
+        paddingLeft: `${mmToPx(settings.margins.left)}px`,
+        paddingRight: `${mmToPx(settings.margins.right)}px`,
       }}
     >
       <EditorContent editor={editor} className="w-full" />

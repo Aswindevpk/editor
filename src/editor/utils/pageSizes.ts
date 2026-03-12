@@ -60,9 +60,14 @@ export interface MarginConfig {
     right: number;
 }
 
+export const PX_PER_MM = 96 / 25.4;
+
+export const mmToPx = (mm: number) => mm * PX_PER_MM;
+export const pxToMm = (px: number) => px / PX_PER_MM;
+
 export const DEFAULT_MARGINS: MarginConfig = {
-    top: 96, // 1 inch
-    bottom: 96,
-    left: 96,
-    right: 96,
+    top: 25.4, // 1 inch in mm
+    bottom: 25.4,
+    left: 25.4,
+    right: 25.4,
 };

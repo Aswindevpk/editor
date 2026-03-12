@@ -6,7 +6,7 @@ import { HEADER_FOOTER_EXTENSIONS } from '../config/editorExtensions';
 const STORAGE_KEY = 'tiptap-editor-doc';
 
 import type { PageSizeType, MarginConfig } from '../utils/pageSizes';
-import { PAGE_SIZES, DEFAULT_MARGINS } from '../utils/pageSizes';
+import { PAGE_SIZES, DEFAULT_MARGINS, mmToPx } from '../utils/pageSizes';
 
 export interface PageSettings {
   size: PageSizeType;
@@ -73,7 +73,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   footerHTML: '<p style="text-align: left">Document Footer</p>',
   pageBreaks: [],
   pages: [],
-  contentHeight: PAGE_SIZES.A4.heightPx - (DEFAULT_MARGINS.top + DEFAULT_MARGINS.bottom),
+  contentHeight: PAGE_SIZES.A4.heightPx - (mmToPx(DEFAULT_MARGINS.top) + mmToPx(DEFAULT_MARGINS.bottom)),
   isHeaderEditing: false,
   isFooterEditing: false,
   activeEditor: null,
@@ -91,6 +91,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     
     if (updated.orientation === 'landscape') {
       width = pageSize.heightPx;
+      height = pageSize.heightPx; // Error found here in existing code: should be height = pageSize.widthPx?
+      width = pageSize.heightPx;
       height = pageSize.widthPx;
     }
     
@@ -98,7 +100,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     
     return {
       settings,
-      contentHeight: settings.height - (settings.margins.top + settings.margins.bottom),
+      contentHeight: settings.height - (mmToPx(settings.margins.top) + mmToPx(settings.margins.bottom)),
     };
   }),
   updateMetadata: (newMetadata) => set((state) => ({

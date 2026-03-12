@@ -1,5 +1,6 @@
 import { Editor } from '@tiptap/react';
 import type { PageSettings } from '../store/useDocumentStore';
+import { mmToPx } from '../utils/pageSizes';
 
 interface ExportData {
   editor: Editor | null;
@@ -96,13 +97,14 @@ export async function exportToPdf({
         
         ${styles}
         
+
         @page { size: ${settings.size}${settings.orientation === 'landscape' ? ' landscape' : ''}; margin: 0; }
-        body { 
-          background: #f3f4f6; 
-          margin: 0; 
+        body {
+          background: #f3f4f6;
+          margin: 0;
           font-family: 'Inter', sans-serif;
         }
-        .page-sheet {
+        .page-view {
           width: ${settings.width}px;
           height: ${settings.height}px;
           background: white;
@@ -111,11 +113,12 @@ export async function exportToPdf({
           display: flex;
           flex-direction: column;
           box-shadow: 0 0 10px rgba(0,0,0,0.1);
+          box-sizing: border-box;
         }
         .header, .footer {
           display: flex;
           align-items: center;
-          padding: 0 ${settings.margins.left}px;
+          padding: 0 ${mmToPx(settings.margins.left)}px;
           color: #9ca3af;
           font-size: 14px;
         }
