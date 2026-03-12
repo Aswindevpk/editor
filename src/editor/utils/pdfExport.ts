@@ -161,7 +161,7 @@ export async function exportToPdf({
     }
 
     console.log('Sending HTML to PDF server...');
-    const response = await fetch('http://localhost:4000/api/export-pdf', {
+    const response = await fetch('https://pdfserver-production-1ed8.up.railway.app/api/export-pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
