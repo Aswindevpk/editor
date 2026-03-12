@@ -7,8 +7,8 @@ interface ExportData {
   pageBreaks: number[];
 }
 
-const PDF_SERVER_URL = 'https://pdfserver-production-1ed8.up.railway.app';
-// const PDF_SERVER_URL = 'http://localhost:4000';
+// Use environment variable with fallback to production URL if not defined
+const PDF_SERVER_URL = import.meta.env.VITE_PDF_SERVER_URL || 'http://localhost:3000';
 
 /**
  * Extracts all relevant CSS from the current document to ensure 
