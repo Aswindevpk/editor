@@ -25,7 +25,7 @@ const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }
       attributes: {
         class: 'focus:outline-none min-h-[1em] w-full',
       },
-      handleKeyDown: (view, event) => {
+      handleKeyDown: (_view, event) => {
         if (event.key === 'Escape') {
           onClose();
           return true;

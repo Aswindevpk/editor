@@ -89,7 +89,7 @@ export async function exportToPdf({
   document.body.removeChild(tempPage);
 
   // 3. Construct Final HTML
-  const finalPagesHtml = pages.map((pageContent, i) => `
+  const finalPagesHtml = pages.map((pageContent) => `
     <div class="page-sheet">
       <div class="header" style="height: ${settings.marginTop}px;">${headerHTML}</div>
       <div class="content-area" style="padding: 0 ${settings.marginRight}px 0 ${settings.marginLeft}px; min-height: ${maxContentHeight}px;">
