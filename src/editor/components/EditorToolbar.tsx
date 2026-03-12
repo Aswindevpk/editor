@@ -18,11 +18,13 @@ import {
     Baseline,
     Highlighter,
     Eraser,
+    Loader2,
 } from 'lucide-react';
 import { useDocumentStore } from '../store/useDocumentStore';
 import { exportToPdf } from '../utils/pdfExport';
 
 export const EditorToolbar: React.FC = () => {
+    const [isExporting, setIsExporting] = React.useState(false);
     const {
         metadata,
         activeEditor: editor,
@@ -44,7 +46,8 @@ export const EditorToolbar: React.FC = () => {
     );
 
     const handleExport = async () => {
-        if (!editor) return;
+        if (!editor || isExporting) return;
+        setIsExporting(true);
         try {
             console.log('Exporting PDF for:', metadata.title);
             await exportToPdf({
@@ -56,6 +59,8 @@ export const EditorToolbar: React.FC = () => {
             });
         } catch (error) {
             console.error('Failed to export PDF:', error);
+        } finally {
+            setIsExporting(false);
         }
     };
 
@@ -295,11 +300,12 @@ export const EditorToolbar: React.FC = () => {
 
             <div className="ml-auto flex items-center gap-2">
                 <button
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-xs font-medium"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleExport}
+                    disabled={isExporting}
                 >
-                    <Download size={14} />
-                    Export PDF
+                    {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                    {isExporting ? 'Exporting...' : 'Export PDF'}
                 </button>
             </div>
         </div>

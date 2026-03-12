@@ -151,15 +151,6 @@ export async function exportToPdf({
   `;
 
   try {
-    console.log('Opening preview in new tab...');
-    const previewWindow = window.open('', '_blank');
-    if (previewWindow) {
-      previewWindow.document.write(fullHtml);
-      previewWindow.document.close();
-    } else {
-      alert('Please allow popups to view the PDF preview.');
-    }
-
     console.log('Sending HTML to PDF server...');
     const response = await fetch('https://pdfserver-production-1ed8.up.railway.app/api/export-pdf', {
       method: 'POST',
