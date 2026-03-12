@@ -7,6 +7,9 @@ interface ExportData {
   pageBreaks: number[];
 }
 
+const PDF_SERVER_URL = 'https://pdfserver-production-1ed8.up.railway.app';
+// const PDF_SERVER_URL = 'http://localhost:4000';
+
 /**
  * Extracts all relevant CSS from the current document to ensure 
  * the PDF accurately reflects the editor's visual state.
@@ -141,7 +144,7 @@ export async function exportToPdf({
 
   try {
     console.log('Sending HTML to PDF server...');
-    const response = await fetch('http://localhost:4000/api/export-pdf', {
+    const response = await fetch(PDF_SERVER_URL + '/api/export-pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
