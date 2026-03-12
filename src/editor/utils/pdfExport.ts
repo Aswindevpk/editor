@@ -89,7 +89,7 @@ export async function exportToPdf({
   document.body.removeChild(tempPage);
 
   // 3. Construct Final HTML
-  const finalPagesHtml = pages.map((pageContent) => `
+    const finalPagesHtml = pages.map((pageContent) => `
     <div class="page-sheet">
       <div class="header" style="height: ${settings.marginTop}px;">${headerHTML}</div>
       <div class="content-area" style="padding: 0 ${settings.marginRight}px 0 ${settings.marginLeft}px; min-height: ${maxContentHeight}px;">
@@ -106,9 +106,16 @@ export async function exportToPdf({
     <html>
     <head>
       <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&family=Sora:wght@400;500;600&display=swap');
+        
         ${styles}
+        
         @page { size: A4; margin: 0; }
-        body { background: #f3f4f6; margin: 0; }
+        body { 
+          background: #f3f4f6; 
+          margin: 0; 
+          font-family: 'Inter', sans-serif;
+        }
         .page-sheet {
           width: ${settings.width}px;
           height: ${settings.height}px;
@@ -127,13 +134,19 @@ export async function exportToPdf({
           font-size: 14px;
         }
         .content-area { flex-grow: 1; overflow: hidden; }
+        
+        /* Ensure fonts are applied in the prose content */
+        .prose {
+          font-family: inherit;
+        }
+        
         @media print {
           body { background: none; }
           .page-sheet { margin: 0; box-shadow: none; page-break-after: always; }
         }
       </style>
     </head>
-    <body>${finalPagesHtml}</body>
+    <body class="prose">${finalPagesHtml}</body>
     </html>
   `;
 

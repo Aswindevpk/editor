@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import { useDocumentStore } from '../store/useDocumentStore';
+import { HEADER_FOOTER_EXTENSIONS } from '../config/editorExtensions';
 
 interface HeaderFooterEditorProps {
   type: 'header' | 'footer';
@@ -9,18 +9,18 @@ interface HeaderFooterEditorProps {
 }
 
 const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }) => {
-  const { headerHTML, setHeaderHTML, footerHTML, setFooterHTML, settings } = useDocumentStore();
-  
-  const content = type === 'header' ? headerHTML : footerHTML;
-  const setContent = type === 'header' ? setHeaderHTML : setFooterHTML;
+  const { headerJSON, setHeaderJSON, footerJSON, setFooterJSON, settings } = useDocumentStore();
+
+  const content = type === 'header' ? headerJSON : footerJSON;
+  const setContent = type === 'header' ? setHeaderJSON : setFooterJSON;
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: HEADER_FOOTER_EXTENSIONS,
     content,
     onUpdate: ({ editor }) => {
-      setContent(editor.getHTML());
+      setContent(editor.getJSON());
     },
-    autofocus: 'end',
+    autofocus: 'start',
     editorProps: {
       attributes: {
         class: 'focus:outline-none min-h-[1em] w-full',
@@ -48,7 +48,7 @@ const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }
   }, [onClose]);
 
   return (
-    <div 
+    <div
       className="header-footer-editor-container w-full h-full flex items-center bg-blue-50/30 ring-2 ring-blue-400 ring-inset rounded-sm"
       style={{
         paddingLeft: `${settings.marginLeft}px`,
