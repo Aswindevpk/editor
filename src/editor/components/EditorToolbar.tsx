@@ -29,8 +29,6 @@ export const EditorToolbar: React.FC = () => {
         metadata,
         activeEditor: editor,
         settings,
-        headerHTML,
-        footerHTML,
         pageBreaks
     } = useDocumentStore();
 
@@ -53,8 +51,6 @@ export const EditorToolbar: React.FC = () => {
             await exportToPdf({
                 editor,
                 settings,
-                headerHTML,
-                footerHTML,
                 pageBreaks
             });
         } catch (error) {

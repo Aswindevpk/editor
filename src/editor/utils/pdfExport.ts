@@ -4,8 +4,6 @@ import type { PageSettings } from '../store/useDocumentStore';
 interface ExportData {
   editor: Editor | null;
   settings: PageSettings;
-  headerHTML: string;
-  footerHTML: string;
   pageBreaks: number[];
 }
 
@@ -40,66 +38,51 @@ function extractStyles(): string {
 export async function exportToPdf({
   editor,
   settings,
-  headerHTML,
-  footerHTML,
+  pageBreaks,
 }: ExportData) {
   if (!editor) return;
 
   const styles = extractStyles();
 
-  // 1. Create a temporary container to calculate heights
-  const scratchpad = document.createElement('div');
-  scratchpad.style.width = `${settings.width}px`;
-  scratchpad.style.visibility = 'hidden';
-  scratchpad.style.position = 'absolute';
-  scratchpad.innerHTML = editor.getHTML();
-  document.body.appendChild(scratchpad);
-
-  const nodes = Array.from(scratchpad.childNodes);
-  const pages: string[][] = [[]];
+  const editorDom = editor.view.dom;
+  const blocks = Array.from(editorDom.children);
+  const chunkedPages: string[][] = [[]];
   let currentPageIndex = 0;
 
-  // A4 content height calculation
-  const maxContentHeight = settings.height - settings.margins.top - settings.margins.bottom;
-
-  // 2. Pagination Logic: Group nodes into pages
-  let currentHeight = 0;
-  const tempPage = document.createElement('div');
-  tempPage.style.width = `${settings.width - settings.margins.left - settings.margins.right}px`;
-  document.body.appendChild(tempPage);
-
-  nodes.forEach((node) => {
-    const clone = node.cloneNode(true) as HTMLElement;
-    tempPage.appendChild(clone);
-    const nodeHeight = (node as HTMLElement).offsetHeight || 20; // fallback for text nodes
-
-    if (currentHeight + nodeHeight > maxContentHeight) {
+  blocks.forEach((block, index) => {
+    if (pageBreaks.includes(index)) {
       currentPageIndex++;
-      pages[currentPageIndex] = [];
-      currentHeight = nodeHeight;
-    } else {
-      currentHeight += nodeHeight;
+      chunkedPages[currentPageIndex] = [];
     }
-
-    pages[currentPageIndex].push((node as HTMLElement).outerHTML || (node as Text).textContent || '');
+    chunkedPages[currentPageIndex].push(block.outerHTML);
   });
 
-  // Cleanup temp elements
-  document.body.removeChild(scratchpad);
-  document.body.removeChild(tempPage);
+  const pages = document.querySelectorAll('.page-view');
+  
+  if (pages.length === 0) {
+    console.warn("No pages found to export.");
+    return;
+  }
 
-  // 3. Construct Final HTML
-    const finalPagesHtml = pages.map((pageContent) => `
-    <div class="page-sheet">
-      <div class="header" style="height: ${settings.margins.top}px;">${headerHTML}</div>
-      <div class="content-area" style="padding: 0 ${settings.margins.right}px 0 ${settings.margins.left}px; min-height: ${maxContentHeight}px;">
-        ${pageContent.join('')}
-      </div>
-      <div class="footer" style="height: ${settings.margins.bottom}px;">
-        ${footerHTML}
-      </div>
-    </div>
-  `).join('');
+  // Clone each page to safely strip out editing-specific UI (like borders/hover effects on headers) 
+  // without affecting the live DOM.
+  const pageHtmls = Array.from(pages).map((pageNode, index) => {
+     const clone = pageNode.cloneNode(true) as HTMLElement;
+     // Clean up editor-specific classes
+     clone.classList.remove('mb-10', 'shadow-page', 'mx-auto');
+     clone.style.margin = '0'; // reset margin for print
+
+     // Inject the actual editor content for this page
+     const contentArea = clone.querySelector('.content-area');
+     if (contentArea) {
+         contentArea.innerHTML = chunkedPages[index]?.join('') || '';
+         contentArea.classList.add('prose', 'prose-sm', 'max-w-none'); // ensure tiptap prose classes apply
+     }
+
+     return clone.outerHTML;
+  });
+
+  const finalHtml = pageHtmls.join('');
 
   const fullHtml = `
     <!DOCTYPE html>
@@ -136,23 +119,29 @@ export async function exportToPdf({
         .content-area { flex-grow: 1; overflow: hidden; }
         
         /* Ensure fonts are applied in the prose content */
-        .prose {
+        .prose, .content-area {
           font-family: inherit;
         }
         
         @media print {
           body { background: none; }
-          .page-sheet { margin: 0; box-shadow: none; page-break-after: always; }
+          .page-view { 
+             box-shadow: none !important; 
+             margin: 0 !important;
+             page-break-after: always;
+          }
         }
       </style>
     </head>
-    <body class="prose">${finalPagesHtml}</body>
+    <body class="prose prose-sm max-w-none bg-white">
+      ${finalHtml}
+    </body>
     </html>
   `;
 
   try {
     console.log('Sending HTML to PDF server...');
-    const response = await fetch('https://pdfserver-production-1ed8.up.railway.app/api/export-pdf', {
+    const response = await fetch('http://localhost:4000/api/export-pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

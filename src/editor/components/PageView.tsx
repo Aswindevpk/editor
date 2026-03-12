@@ -29,10 +29,11 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
 
   return (
     <div
-      className="relative bg-white shadow-page mx-auto mb-10 overflow-hidden"
+      className="page-view relative bg-white shadow-page mx-auto mb-10 overflow-hidden"
       style={{
         width: `${settings.width}px`,
-        height: `${settings.height}px`
+        height: `${settings.height}px`,
+        boxSizing: 'border-box'
       }}
     >
       {/* HEADER: Placed inside the Top Margin */}
@@ -57,10 +58,16 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
         )}
       </div>
 
-      {/* CONTENT AREA PLACEHOLDER: Visual only, Editor sits on top. Pointer events none so editor is clickable */}
+      {/* CONTENT AREA PLACEHOLDER: Visual only, Editor sits on top. Pointer events none so editor is clickable. Used for PDF Export injection. */}
       <div
-        className="pointer-events-none"
-        style={{ marginTop: `${settings.margins.top}px`, height: `${contentHeight}px` }}
+        className="content-area pointer-events-none"
+        style={{ 
+          marginTop: `${settings.margins.top}px`, 
+          height: `${contentHeight}px`,
+          paddingLeft: `${settings.margins.left}px`,
+          paddingRight: `${settings.margins.right}px`,
+          boxSizing: 'border-box'
+        }}
       />
 
       {/* FOOTER: Placed inside the Bottom Margin */}
