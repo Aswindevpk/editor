@@ -63,21 +63,14 @@ const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }
 
   return (
     <div
-      className="header-footer-editor-container w-full h-full flex items-center bg-blue-50/30 ring-2 ring-blue-400 ring-inset rounded-sm"
+      className="header-footer-editor-container w-full h-full flex items-center bg-blue-50/30 ring-1 ring-blue-400 ring-inset "
       style={{
         paddingLeft: `${mmToPx(settings.margins.left)}px`,
         paddingRight: `${mmToPx(settings.margins.right)}px`,
       }}
     >
       <EditorContent editor={editor} className="w-full" />
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
-        <span className="text-[10px] font-medium text-blue-500 uppercase tracking-wider bg-white px-1.5 py-0.5 rounded shadow-sm border border-blue-200">
-          Editing {type}
-        </span>
-        <span className="text-[10px] text-blue-400 bg-white px-1 py-0.5 rounded shadow-sm border border-blue-100">
-          Esc to save
-        </span>
-      </div>
+
     </div>
   );
 };

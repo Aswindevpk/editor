@@ -40,7 +40,7 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
     >
       {/* HEADER: Placed inside the Top Margin */}
       <div
-        className="absolute top-0 left-0 right-0 flex items-center cursor-default text-gray-400 group z-20"
+        className="absolute top-0 left-0 right-0 flex items-center justify-between text-gray-400 text-sm group z-20"
         style={{
           height: `${mmToPx(settings.margins.top)}px`,
         }}
@@ -50,13 +50,14 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
           <HeaderFooterEditor type="header" onClose={() => setIsHeaderEditing(false)} />
         ) : (
           <div
-            className="w-full h-full flex items-center text-sm border-b border-transparent group-hover:border-blue-200 transition-colors py-1 mx-auto"
+            className="w-full h-full flex items-center border-b border-transparent group-hover:border-blue-200 transition-colors"
             style={{
               paddingLeft: `${mmToPx(settings.margins.left)}px`,
               paddingRight: `${mmToPx(settings.margins.right)}px`,
             }}
-            dangerouslySetInnerHTML={{ __html: headerHTML }}
-          />
+          >
+            <div className="flex-1" dangerouslySetInnerHTML={{ __html: headerHTML }} />
+          </div>
         )}
       </div>
 
@@ -92,7 +93,6 @@ const PageView: React.FC<PageViewProps> = ({ index }) => {
               }}
             >
               <div className="flex-1" dangerouslySetInnerHTML={{ __html: footerHTML }} />
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity">Page {index + 1}</span>
             </div>
           </>
         )}
