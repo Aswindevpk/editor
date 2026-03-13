@@ -18,7 +18,7 @@ export const PageControls: React.FC = () => {
     };
 
     return (
-        <div className="w-72 bg-white border-l h-full overflow-y-auto p-6 shadow-sm">
+        <div className="page-controls w-72 bg-white border-l h-full overflow-y-auto p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-8 text-gray-900 font-semibold border-b pb-4">
                 <Settings size={20} className="text-blue-600" />
                 <h2>Document Settings</h2>

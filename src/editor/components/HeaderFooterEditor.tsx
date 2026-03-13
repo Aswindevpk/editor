@@ -51,7 +51,9 @@ const HeaderFooterEditor: React.FC<HeaderFooterEditorProps> = ({ type, onClose }
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (!target.closest('.header-footer-editor-container')) {
+      if (!target.closest('.header-footer-editor-container') && 
+          !target.closest('.editor-toolbar') && 
+          !target.closest('.page-controls')) {
         onClose();
       }
     };

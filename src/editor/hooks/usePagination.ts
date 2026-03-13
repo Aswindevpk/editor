@@ -3,7 +3,7 @@ import { useDocumentStore } from '../store/useDocumentStore';
 import { runPagination } from '../pagination/runPagination';
 
 export const usePagination = (editorElement: HTMLElement | null) => {
-  const { settings, setPageBreaks } = useDocumentStore();
+  const { settings } = useDocumentStore();
   const lastHeightRef = useRef(0);
 
   const calculatePagination = useCallback(() => {
@@ -12,9 +12,11 @@ export const usePagination = (editorElement: HTMLElement | null) => {
     // We need to wait for a tick to ensure offsetHeights are accurate
     requestAnimationFrame(() => {
       const result = runPagination(editorElement, settings);
+      const { setTotalPages, setPageBreaks } = useDocumentStore.getState();
       setPageBreaks(result.pageBreaks);
+      setTotalPages(result.totalPages);
     });
-  }, [editorElement, settings, setPageBreaks]);
+  }, [editorElement, settings]);
 
   useEffect(() => {
     if (!editorElement) return;

@@ -38,6 +38,8 @@ interface DocumentState {
   isSaving: boolean;
   lastSaved: string | null;
   isPaginationPending: boolean;
+  totalPages: number;
+  currentPage: number;
   pages: { id: string; content: any }[];
   updateSettings: (settings: Partial<PageSettings>) => void;
   updateMetadata: (metadata: Partial<DocumentMetadata>) => void;
@@ -51,6 +53,8 @@ interface DocumentState {
   loadDocument: () => void;
   triggerPagination: () => void;
   setIsPaginationPending: (isPending: boolean) => void;
+  setTotalPages: (total: number) => void;
+  setCurrentPage: (current: number) => void;
   updatePages: (pages: { id: string; content: any }[]) => void;
 }
 
@@ -80,6 +84,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   isSaving: false,
   lastSaved: null,
   isPaginationPending: false,
+  totalPages: 1,
+  currentPage: 1,
 
   updateSettings: (newSettings) => set((state) => {
     const updated = { ...state.settings, ...newSettings };
@@ -171,5 +177,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     set((state) => ({ ...state })); 
   },
   setIsPaginationPending: (isPending) => set({ isPaginationPending: isPending }),
+  setTotalPages: (total) => set({ totalPages: total }),
+  setCurrentPage: (current) => set({ currentPage: current }),
   updatePages: (pages) => set({ pages }),
 }));

@@ -78,7 +78,7 @@ export const EditorToolbar: React.FC = () => {
 
 
     return (
-        <div className="sticky top-0 z-50 flex items-center gap-1 bg-white border-b px-4 py-1.5 shadow-sm min-w-max overflow-x-auto custom-scrollbar shrink-0">
+        <div className="editor-toolbar sticky top-0 z-50 flex items-center gap-1 bg-white border-b px-4 py-1.5 shadow-sm min-w-max overflow-x-auto custom-scrollbar shrink-0">
             <div className="relative flex items-center gap-0.5">
                 {!editor && (
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center text-[10px] text-gray-400 font-medium border rounded">
