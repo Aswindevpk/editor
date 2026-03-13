@@ -1,19 +1,45 @@
 import React from 'react';
 import { EditorToolbar } from './EditorToolbar';
 import { EditorCanvas } from './EditorCanvas';
-import { PageControls } from './PageControls';
 import { DocumentPersistence } from './DocumentPersistence';
 import { useDocumentStore } from '../store/useDocumentStore';
-import { FileText, ChevronLeft, Globe, Clock, Loader2 } from 'lucide-react';
+import { 
+    FileText, 
+    Cloud, 
+    Download, 
+    Loader2
+} from 'lucide-react';
+import { exportToPdf } from '../utils/pdfExport';
 
 export const DocumentEditor: React.FC = () => {
+    const [isExporting, setIsExporting] = React.useState(false);
     const {
         metadata,
         updateMetadata,
         activeEditor,
         isSaving,
-        lastSaved
+        lastSaved,
+        activeEditor: editor,
+        settings,
+        pageBreaks
     } = useDocumentStore();
+
+    const handleExport = async () => {
+        if (!editor || isExporting) return;
+        setIsExporting(true);
+        try {
+            console.log('Exporting PDF for:', metadata.title);
+            await exportToPdf({
+                editor,
+                settings,
+                pageBreaks
+            });
+        } catch (error) {
+            console.error('Failed to export PDF:', error);
+        } finally {
+            setIsExporting(false);
+        }
+    };
 
     const formatLastSaved = (dateStr: string | null) => {
         if (!dateStr) return 'Not saved yet';
@@ -22,44 +48,63 @@ export const DocumentEditor: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gray-50 text-gray-900 font-sans">
+        <div className="flex flex-col h-screen bg-[#F9FBFF] text-gray-900 font-sans">
             <DocumentPersistence />
             {/* Top Navigation Bar */}
-            <header className="h-14 bg-white border-b flex items-center px-4 shrink-0 justify-between">
-                <div className="flex items-center gap-4">
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <ChevronLeft size={20} className="text-gray-500" />
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <div className="bg-blue-600 p-2 rounded-lg">
-                            <FileText size={20} className="text-white" />
-                        </div>
-                        <div>
+            <header className="bg-white shrink-0 py-3 px-4">
+                <div className="flex items-center gap-3">
+                    {/* Logo */}
+                    <div className="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+                        <FileText size={40} className="text-blue-600 fill-blue-600/10" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                        {/* Title Row */}
+                        <div className="flex items-center gap-1 group">
                             <input
                                 type="text"
                                 value={metadata.title}
                                 onChange={(e) => updateMetadata({ title: e.target.value })}
-                                className="font-medium text-gray-900 focus:bg-gray-100 px-1 py-0.5 rounded border-none outline-none transition-colors"
+                                className="text-sm text-gray-800 hover:outline hover:outline-1 hover:outline-gray-300 focus:outline focus:outline-2 focus:outline-blue-500 rounded px-2  -ml-2 bg-transparent transition-all max-w-[500px] truncate"
                             />
-                            <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-0.5">
-                                <span className="flex items-center gap-1">
-                                    {isSaving ? (
-                                        <Loader2 size={10} className="animate-spin text-blue-500" />
-                                    ) : (
-                                        <Clock size={10} />
-                                    )}
-                                    {isSaving ? 'Saving...' : formatLastSaved(lastSaved)}
-                                </span>
-                                <span className="w-px h-2 bg-gray-200" />
-                                <span className="flex items-center gap-1"><Globe size={10} /> Public on the web</span>
-                            </div>
+                           
+                        </div>
+
+                        {/* Save Status Row */}
+                        <div className="flex items-center gap-1 -ml-1 mt-0.5 text-[11px] text-gray-500">
+                            {isSaving ? (
+                                <>
+                                    <Loader2 size={13} className="animate-spin text-blue-500" />
+                                    <span>Saving...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="p-0.5 hover:bg-gray-100 rounded text-gray-400" title="All changes saved to cloud">
+                                        <Cloud size={12} />
+                                    </div>
+                                    <span className="text-[10px]">{formatLastSaved(lastSaved)}</span>
+                                </>
+                            )}
                         </div>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-sm">
-                        AS
+                    {/* Right Side Actions */}
+                    <div className="flex items-center gap-1.5">
+                        <button
+                            className="group flex items-center gap-2 bg-blue-600 hover:bg-[#0842a0] text-white px-5 py-2 rounded-lg transition-all text-sm font-semibold shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                            onClick={handleExport}
+                            disabled={isExporting}
+                        >
+                            {isExporting ? (
+                                <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                                <Download size={16} className="transition-transform group-hover:-translate-y-0.5" />
+                            )}
+                            <span className="whitespace-nowrap text-[12px]">
+                                {isExporting ? 'Exporting...' : 'Export PDF'}
+                            </span>
+                        </button>
+
                     </div>
                 </div>
             </header>
@@ -72,10 +117,6 @@ export const DocumentEditor: React.FC = () => {
                     <div className="flex-1 flex flex-col relative overflow-hidden">
                         <EditorCanvas />
                     </div>
-
-                    <aside className="shrink-0 border-l">
-                        <PageControls />
-                    </aside>
                 </main>
             </div>
 

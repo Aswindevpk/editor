@@ -12,7 +12,6 @@ import {
     Indent,
     Undo2,
     Redo2,
-    Download,
     List,
     ListOrdered,
     Highlighter,
@@ -21,28 +20,35 @@ import {
     ListChevronsUpDown,
     ChevronDown,
     Save,
+    Layout,
+    Maximize,
+    StickyNote,
 } from 'lucide-react';
 import { useDocumentStore } from '../store/useDocumentStore';
-import { exportToPdf } from '../utils/pdfExport';
+import { PAGE_SIZES, type PageSizeType } from '../utils/pageSizes';
 
 export const EditorToolbar: React.FC = () => {
-    const [isExporting, setIsExporting] = React.useState(false);
     const [showLineSpacing, setShowLineSpacing] = React.useState(false);
     const [showHeading, setShowHeading] = React.useState(false);
     const [showFont, setShowFont] = React.useState(false);
     const [showFontSize, setShowFontSize] = React.useState(false);
+    const [showOrientation, setShowOrientation] = React.useState(false);
+    const [showPageSize, setShowPageSize] = React.useState(false);
+    const [showMargins, setShowMargins] = React.useState(false);
 
     const lineSpacingRef = React.useRef<HTMLDivElement>(null);
     const headingRef = React.useRef<HTMLDivElement>(null);
     const fontRef = React.useRef<HTMLDivElement>(null);
     const fontSizeRef = React.useRef<HTMLDivElement>(null);
+    const orientationRef = React.useRef<HTMLDivElement>(null);
+    const pageSizeRef = React.useRef<HTMLDivElement>(null);
+    const marginsRef = React.useRef<HTMLDivElement>(null);
     const {
-        metadata,
         activeEditor: editor,
         settings,
-        pageBreaks,
         saveDocument,
-        isSaving
+        isSaving,
+        updateSettings
     } = useDocumentStore();
 
     // Close dropdowns on click outside
@@ -53,6 +59,9 @@ export const EditorToolbar: React.FC = () => {
             if (headingRef.current && !headingRef.current.contains(target)) setShowHeading(false);
             if (fontRef.current && !fontRef.current.contains(target)) setShowFont(false);
             if (fontSizeRef.current && !fontSizeRef.current.contains(target)) setShowFontSize(false);
+            if (orientationRef.current && !orientationRef.current.contains(target)) setShowOrientation(false);
+            if (pageSizeRef.current && !pageSizeRef.current.contains(target)) setShowPageSize(false);
+            if (marginsRef.current && !marginsRef.current.contains(target)) setShowMargins(false);
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -69,22 +78,6 @@ export const EditorToolbar: React.FC = () => {
         </button>
     );
 
-    const handleExport = async () => {
-        if (!editor || isExporting) return;
-        setIsExporting(true);
-        try {
-            console.log('Exporting PDF for:', metadata.title);
-            await exportToPdf({
-                editor,
-                settings,
-                pageBreaks
-            });
-        } catch (error) {
-            console.error('Failed to export PDF:', error);
-        } finally {
-            setIsExporting(false);
-        }
-    };
 
     const run = (fn: (editor: any) => any) => {
         if (editor) {
@@ -117,8 +110,8 @@ export const EditorToolbar: React.FC = () => {
     };
 
     return (
-        <div className="editor-toolbar sticky top-0 z-50 flex items-center gap-1 bg-white border-b px-4 py-1.5 shadow-sm min-w-max shrink-0">
-            <div className="relative flex items-center gap-0.5">
+        <div className="editor-toolbar sticky top-0 z-50 flex items-center gap-1 px-4 py-1.5 shadow-sm bg-white">
+            <div className="relative flex items-center gap-2 flex-wrap flex-1 bg-blue-50/50 py-2 px-4 rounded-lg">
                 {!editor && (
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center text-[10px] text-gray-400 font-medium border rounded">
                         Click page to edit
@@ -133,10 +126,9 @@ export const EditorToolbar: React.FC = () => {
                     <Button onClick={() => run(e => e.redo())} disabled={!editor} title="Redo">
                         <Redo2 size={16} />
                     </Button>
-                    <div className="w-px h-4 bg-gray-200 mx-1" />
-                    <Button 
-                        onClick={() => saveDocument()} 
-                        disabled={!editor || isSaving} 
+                    <Button
+                        onClick={() => saveDocument()}
+                        disabled={!editor || isSaving}
                         title="Save Changes"
                         active={isSaving}
                     >
@@ -159,7 +151,7 @@ export const EditorToolbar: React.FC = () => {
                             </span>
                             <ChevronDown size={12} className={`transition-transform ${showHeading ? 'rotate-180' : ''}`} />
                         </button>
-                        
+
                         {showHeading && (
                             <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg py-1 z-[60] min-w-[140px]">
                                 {[
@@ -173,9 +165,8 @@ export const EditorToolbar: React.FC = () => {
                                 ].map(h => (
                                     <button
                                         key={h.value}
-                                        className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 transition-colors ${
-                                            getHeadingValue() === h.value ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
-                                        }`}
+                                        className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 transition-colors ${getHeadingValue() === h.value ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
+                                            }`}
                                         onClick={() => {
                                             if (h.value === 'p') run(ed => ed.setParagraph());
                                             else run(ed => ed.toggleHeading({ level: parseInt(h.value.replace('h', '')) as any }));
@@ -202,16 +193,15 @@ export const EditorToolbar: React.FC = () => {
                             </span>
                             <ChevronDown size={12} className={`transition-transform ${showFont ? 'rotate-180' : ''}`} />
                         </button>
-                        
+
                         {showFont && (
                             <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg py-1 z-[60] min-w-[160px] max-h-[300px] overflow-y-auto custom-scrollbar">
                                 {families.map(f => (
                                     <button
                                         key={f.value}
                                         style={{ fontFamily: f.value }}
-                                        className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                                            editor?.getAttributes('textStyle').fontFamily === f.value ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
-                                        }`}
+                                        className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors ${editor?.getAttributes('textStyle').fontFamily === f.value ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
+                                            }`}
                                         onClick={() => {
                                             run(ed => ed.setFontFamily(f.value));
                                             setShowFont(false);
@@ -237,15 +227,14 @@ export const EditorToolbar: React.FC = () => {
                             </span>
                             <ChevronDown size={12} className={`transition-transform ${showFontSize ? 'rotate-180' : ''}`} />
                         </button>
-                        
+
                         {showFontSize && (
                             <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg py-1 z-[60] min-w-[70px] max-h-[250px] overflow-y-auto custom-scrollbar">
                                 {[8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 30, 36, 48, 60, 72, 96].map(size => (
                                     <button
                                         key={size}
-                                        className={`w-full text-center px-3 py-1 text-xs hover:bg-gray-100 transition-colors ${
-                                            editor?.getAttributes('textStyle').fontSize === `${size}px` ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
-                                        }`}
+                                        className={`w-full text-center px-3 py-1 text-xs hover:bg-gray-100 transition-colors ${editor?.getAttributes('textStyle').fontSize === `${size}px` ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
+                                            }`}
                                         onClick={() => {
                                             run(ed => ed.setFontSize(`${size}px`));
                                             setShowFontSize(false);
@@ -257,7 +246,7 @@ export const EditorToolbar: React.FC = () => {
                             </div>
                         )}
                     </div>
-                    </div>
+                </div>
 
                 {/* Basic Formatting */}
                 <div className="flex items-center gap-0.5 pr-2 border-r mr-2">
@@ -364,36 +353,35 @@ export const EditorToolbar: React.FC = () => {
                         >
                             <Indent size={16} />
                         </Button>
-                                            <div className="relative" ref={lineSpacingRef}>
-                        <Button
-                            onClick={() => setShowLineSpacing(!showLineSpacing)}
-                            disabled={!editor}
-                            active={showLineSpacing}
-                            title="Line Spacing"
-                        >
-                            <ListChevronsUpDown size={16} />
-                        </Button>
-                        
-                        {showLineSpacing && (
-                            <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg py-1 z-[60] min-w-[100px]">
-                                {[1, 1.15, 1.5, 2, 2.5, 3].map(spacing => (
-                                    <button
-                                        key={spacing}
-                                        className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 transition-colors ${
-                                            (editor?.getAttributes('paragraph').lineHeight === spacing.toString() || 
-                                             editor?.getAttributes('heading').lineHeight === spacing.toString()) ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
-                                        }`}
-                                        onClick={() => {
-                                            run(ed => ed.setLineHeight(spacing.toString()));
-                                            setShowLineSpacing(false);
-                                        }}
-                                    >
-                                        {spacing}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                        <div className="relative" ref={lineSpacingRef}>
+                            <Button
+                                onClick={() => setShowLineSpacing(!showLineSpacing)}
+                                disabled={!editor}
+                                active={showLineSpacing}
+                                title="Line Spacing"
+                            >
+                                <ListChevronsUpDown size={16} />
+                            </Button>
+
+                            {showLineSpacing && (
+                                <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg py-1 z-[60] min-w-[100px]">
+                                    {[1, 1.15, 1.5, 2, 2.5, 3].map(spacing => (
+                                        <button
+                                            key={spacing}
+                                            className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 transition-colors ${(editor?.getAttributes('paragraph').lineHeight === spacing.toString() ||
+                                                    editor?.getAttributes('heading').lineHeight === spacing.toString()) ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
+                                                }`}
+                                            onClick={() => {
+                                                run(ed => ed.setLineHeight(spacing.toString()));
+                                                setShowLineSpacing(false);
+                                            }}
+                                        >
+                                            {spacing}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -422,17 +410,111 @@ export const EditorToolbar: React.FC = () => {
                         />
                     </div>
                 </div>
-            </div>
 
-            <div className="ml-auto flex items-center gap-2">
-                <button
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={handleExport}
-                    disabled={isExporting}
-                >
-                    {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-                    {isExporting ? 'Exporting...' : 'Export PDF'}
-                </button>
+                {/* Page Setup Section */}
+                <div className="flex items-center gap-1 pl-2 border-l ml-2">
+                    {/* Page Size */}
+                    <div className="relative" ref={pageSizeRef}>
+                        <button
+                            onClick={() => setShowPageSize(!showPageSize)}
+                            className={`flex items-center gap-1.5 px-2 py-1 text-xs border rounded hover:bg-gray-50 transition-colors ${showPageSize ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-700'}`}
+                            title="Page Size"
+                        >
+                            <StickyNote size={14} />
+                            <span className="truncate max-w-[60px]">{PAGE_SIZES[settings.size as PageSizeType]?.label || settings.size}</span>
+                            <ChevronDown size={12} className={`transition-transform ${showPageSize ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {showPageSize && (
+                            <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg py-1 z-[60] min-w-[200px] max-h-[300px] overflow-y-auto custom-scrollbar">
+                                {(Object.keys(PAGE_SIZES) as PageSizeType[]).map((size) => (
+                                    <button
+                                        key={size}
+                                        className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-100 transition-colors ${settings.size === size ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
+                                            }`}
+                                        onClick={() => {
+                                            updateSettings({ size });
+                                            setShowPageSize(false);
+                                        }}
+                                    >
+                                        <div className="font-medium">{PAGE_SIZES[size].label}</div>
+                                        <div className="text-[10px] text-gray-500">{PAGE_SIZES[size].widthMm} x {PAGE_SIZES[size].heightMm} mm</div>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Orientation */}
+                    <div className="relative" ref={orientationRef}>
+                        <button
+                            onClick={() => setShowOrientation(!showOrientation)}
+                            className={`flex items-center gap-1.5 px-2 py-1 text-xs border rounded hover:bg-gray-50 transition-colors ${showOrientation ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-700'}`}
+                            title="Page Orientation"
+                        >
+                            <Layout size={14} />
+                            <span className="capitalize">{settings.orientation}</span>
+                            <ChevronDown size={12} className={`transition-transform ${showOrientation ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {showOrientation && (
+                            <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg py-1 z-[60] min-w-[120px]">
+                                {[
+                                    { label: 'Portrait', value: 'portrait' },
+                                    { label: 'Landscape', value: 'landscape' },
+                                ].map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 transition-colors ${settings.orientation === opt.value ? 'font-bold text-blue-600 bg-blue-50' : 'text-gray-700'
+                                            }`}
+                                        onClick={() => {
+                                            updateSettings({ orientation: opt.value as any });
+                                            setShowOrientation(false);
+                                        }}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Margins */}
+                    <div className="relative" ref={marginsRef}>
+                        <button
+                            onClick={() => setShowMargins(!showMargins)}
+                            className={`flex items-center gap-1.5 px-2 py-1 text-xs border rounded hover:bg-gray-50 transition-colors ${showMargins ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-700'}`}
+                            title="Margins"
+                        >
+                            <Maximize size={14} />
+                            <span>Margins</span>
+                            <ChevronDown size={12} className={`transition-transform ${showMargins ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {showMargins && (
+                            <div className="absolute top-full right-0 mt-1 bg-white border rounded shadow-lg p-3 z-[60] min-w-[180px]">
+                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3 px-1">Margins (mm)</div>
+                                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                                    {(['top', 'bottom', 'left', 'right'] as const).map(side => (
+                                        <div key={side}>
+                                            <label className="block text-[10px] text-gray-500 mb-1 capitalize">{side}</label>
+                                            <input
+                                                type="number"
+                                                step="0.1"
+                                                className="w-full px-2 py-1 text-xs border rounded outline-none focus:ring-1 focus:ring-blue-500"
+                                                value={settings.margins[side]}
+                                                onChange={(e) => updateSettings({
+                                                    margins: { ...settings.margins, [side]: parseFloat(e.target.value) || 0 }
+                                                })}
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
