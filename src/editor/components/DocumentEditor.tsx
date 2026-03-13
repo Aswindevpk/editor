@@ -4,14 +4,13 @@ import { EditorCanvas } from './EditorCanvas';
 import { PageControls } from './PageControls';
 import { DocumentPersistence } from './DocumentPersistence';
 import { useDocumentStore } from '../store/useDocumentStore';
-import { FileText, ChevronLeft, Globe, Clock, Save, Loader2 } from 'lucide-react';
+import { FileText, ChevronLeft, Globe, Clock, Loader2 } from 'lucide-react';
 
 export const DocumentEditor: React.FC = () => {
     const {
         metadata,
         updateMetadata,
         activeEditor,
-        saveDocument,
         isSaving,
         lastSaved
     } = useDocumentStore();
@@ -59,23 +58,6 @@ export const DocumentEditor: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => saveDocument()}
-                        disabled={isSaving}
-                        className={`
-                            flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-lg transition-all
-                            ${isSaving
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md active:scale-95'}
-                        `}
-                    >
-                        {isSaving ? (
-                            <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                            <Save size={16} />
-                        )}
-                        {isSaving ? 'Saving...' : 'Save'}
-                    </button>
                     <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-sm">
                         AS
                     </div>

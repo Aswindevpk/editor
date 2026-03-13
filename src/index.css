@@ -51,3 +51,39 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.tiptap h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0.5em 0;
+}
+
+.tiptap h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0.5em 0;
+}
+
+.tiptap h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0.5em 0;
+}
+
+.tiptap h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0.5em 0;
+}
+
+.tiptap h5 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0.5em 0;
+}
+
+.tiptap h6 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0.5em 0;
+}
