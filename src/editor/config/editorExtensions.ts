@@ -18,6 +18,7 @@ import TaskItem from '@tiptap/extension-task-item';
 import FontFamily from '@tiptap/extension-font-family';
 import { FontSize } from '../extensions/fontSize';
 import { LineHeight } from '../extensions/lineHeight';
+import { Indent } from '../extensions/indent';
 import CharacterCount from '@tiptap/extension-character-count';
 import Focus from '@tiptap/extension-focus';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -76,6 +77,7 @@ export const EDITOR_EXTENSIONS = [
     FontFamily,
     FontSize,
     LineHeight,
+    Indent,
     BulletList,
     OrderedList,
     ListItem,
@@ -117,6 +119,7 @@ export const HEADER_FOOTER_EXTENSIONS = [
     FontFamily,
     FontSize,
     LineHeight,
+    Indent,
     BulletList,
     OrderedList,
     ListItem,

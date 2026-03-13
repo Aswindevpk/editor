@@ -7,6 +7,9 @@ import {
     AlignLeft,
     AlignCenter,
     AlignRight,
+    AlignJustify,
+    Outdent,
+    Indent,
     Undo,
     Redo,
     Download,
@@ -185,6 +188,14 @@ export const EditorToolbar: React.FC = () => {
                     >
                         <AlignRight size={16} />
                     </Button>
+                    <Button
+                        onClick={() => run(e => e.setTextAlign('justify'))}
+                        active={editor?.isActive({ textAlign: 'justify' })}
+                        disabled={!editor}
+                        title="Justify"
+                    >
+                        <AlignJustify size={16} />
+                    </Button>
                 </div>
 
                 {/* Lists & Indent */}
@@ -205,6 +216,22 @@ export const EditorToolbar: React.FC = () => {
                     >
                         <ListOrdered size={16} />
                     </Button>
+                    <div className="flex items-center gap-0.5 ml-2">
+                        <Button
+                            onClick={() => run(e => e.outdent())}
+                            disabled={!editor}
+                            title="Outdent"
+                        >
+                            <Outdent size={16} />
+                        </Button>
+                        <Button
+                            onClick={() => run(e => e.indent())}
+                            disabled={!editor}
+                            title="Indent"
+                        >
+                            <Indent size={16} />
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Colors & Utils */}
