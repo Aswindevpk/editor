@@ -4,11 +4,8 @@ import HeaderFooterEditor from './HeaderFooterEditor';
 
 import { mmToPx } from '../utils/pageSizes';
 
-interface PageViewProps {
-  index: number;
-}
 
-const PageView: React.FC<PageViewProps> = ({ index }) => {
+const PageView: React.FC = () => {
   const {
     settings,
     headerHTML,

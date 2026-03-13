@@ -9,7 +9,7 @@ const PageOverlay: React.FC = () => {
   return (
     <div className="absolute inset-0 pt-10">
       {Array.from({ length: pageCount }).map((_, i) => (
-        <PageView key={i} index={i} />
+        <PageView key={i} />
       ))}
     </div>
   );
